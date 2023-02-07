@@ -180,5 +180,5 @@ The editor should now close and you should be good to go.
 ### Usage
 
 ```bash
-ansible-playbook rotate-passwords.yml --vault-id rotating_passwords@prompt --vault-id password_salt@prompt --extra-vars "target=<host_group>" --ask-become-pass --ask-pass
+ansible-playbook rotate-passwords.yml -i <path/to/inventory.yml> --vault-id rotating_passwords@prompt --vault-id password_salt@prompt --extra-vars "target=<host_group>" --ask-become-pass --ask-pass
 ```
