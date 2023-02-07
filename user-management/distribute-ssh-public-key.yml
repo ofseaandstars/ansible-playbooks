@@ -1,0 +1,31 @@
+---
+# Requires --ask-become-pass and --ask-pass for the ANSIBLE user!
+- name: Distribute SSH public key to linux machines
+  hosts: '{{ target }}'
+  # Don't gather facts immediately - as we need to check the host keys.
+  gather_facts: false
+  remote_user: ansible
+  tasks:
+    - name: Check known_hosts for {{ inventory_hostname }}
+      local_action: shell ssh-keygen -F {{ inventory_hostname }}
+      register: has_entry_in_known_hosts
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Ignore host key for {{ inventory_hostname }} on first run
+      when: has_entry_in_known_hosts.rc == 1
+      ansible.builtin.set_fact:
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    - name: Gathering facts
+      setup:
+
+    - name: Ensure ansible user is present
+      ansible.builtin.user:
+        name: ansible
+        state: present
+
+    - name: Add control node public key to authorized keys on remote host
+      ansible.posix.authorized_key:
+        user: ansible
+        state: present
+        key: "{{ lookup('file', '/home/ansible/.ssh/id_rsa_ansible.pub') }}"

@@ -1,0 +1,29 @@
+---
+# Run command: ansible-playbook ansible-deployment.yml -i inventory.yml --extra-vars "target=ansibledeploy" --ask-become-pass --ask-pass
+- hosts: ansibledeploy
+  gather_facts: false
+  remote_user: systems
+  tasks:
+    - name: Check known_hosts for {{ inventory_hostname }}
+      local_action: shell ssh-keygen -F {{ inventory_hostname }}
+      register: has_entry_in_known_hosts
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Ignore host key for {{ inventory_hostname }} on first run
+      when: has_entry_in_known_hosts.rc == 1
+      ansible.builtin.set_fact:
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    - name: Gathering facts
+      setup:
+
+    - name: Ensure systems user is present
+      ansible.builtin.user:
+        name: systems
+        state: present
+
+- name: Create ansible account on remote host
+  ansible.builtin.import_playbook: create-ansible-account.yml
+  
+- name: Distribute SSH key to remote host
+  ansible.builtin.import_playbook: distribute-ssh-public-key.yml

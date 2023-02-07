@@ -1,0 +1,12 @@
+---
+webservers:
+  hosts:
+    host01: # This is either the FQDN or a friendly name if ansible_host is specified.
+      ansible_host: 10.10.0.1 # This is the IP for the host if there is no FQDN associated with it.
+    host02:
+    host03:
+
+databases:
+  hosts:
+    host04:
+    host05:

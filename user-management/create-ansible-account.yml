@@ -1,0 +1,44 @@
+---
+# --extra-vars "generate_ssh=true"
+- name: Create new ansible account
+  hosts: '{{ target }}'
+  remote_user: systems
+  vars:
+    - ssh_key_filename: id_rsa_ansible
+  vars_prompt:
+    - name: 'ssh_passphrase'
+      prompt: 'Enter the passphrase for the SSH key'
+    - name: 'password'
+      prompt: 'Enter the password for the account'
+  vars_files:
+    - variables/password_salt.yml
+  become: true
+  tasks:
+    - name: Create ansible user
+      ansible.builtin.user:
+        name: ansible
+        password: "{{ password | password_hash('sha512', salt) }}"
+        state: present
+        shell: "/bin/bash"
+        system: false
+        create_home: yes
+      when: generate_ssh is not defined
+
+    - name: Create ansible user with SSH key
+      ansible.builtin.user:
+        name: ansible
+        password: "{{ password | password_hash('sha512', salt) }}"
+        state: present
+        shell: "/bin/bash"
+        system: false
+        create_home: yes
+        generate_ssh_key: yes
+        ssh_key_type: rsa
+        ssh_key_bits: 4096
+        ssh_key_passphrase: "{{ ssh_passphrase }}"
+        ssh_key_file: ".ssh/{{ ssh_key_filename }}"
+      when: generate_ssh is defined
+    - name: Add user to sudo group
+      ansible.builtin.shell: usermod -aG sudo ansible
+      args:
+        executable: /bin/bash
