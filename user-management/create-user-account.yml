@@ -10,8 +10,20 @@
       prompt: 'Enter the password for the account'
   vars_files:
     - variables/password_salt.yml
-  become: true
+  gather_facts: false
   tasks:
+    - name: Check known_hosts for {{ inventory_hostname }}
+      local_action: shell ssh-keygen -F {{ inventory_hostname }}
+      register: has_entry_in_known_hosts
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Ignore host key for {{ inventory_hostname }} on first run
+      when: has_entry_in_known_hosts.rc == 1
+      ansible.builtin.set_fact:
+        ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    - name: Gathering facts
+      setup:
     - name: Create user user
       ansible.builtin.user:
         name: "{{ username }}"
@@ -20,9 +32,11 @@
         shell: "/bin/bash"
         system: false
         create_home: yes
+      become: true
 
     - name: Add user to sudo group
-      ansible.builtin.shell: usermod -aG sudo ansible
+      ansible.builtin.shell: "usermod -aG sudo {{ username }}"
       args:
         executable: /bin/bash
+      become: true
       when: sudo is defined
