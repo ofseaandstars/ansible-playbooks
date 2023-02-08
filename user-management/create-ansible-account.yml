@@ -2,7 +2,7 @@
 # --extra-vars "generate_ssh=true"
 - name: Create new ansible account
   hosts: '{{ target }}'
-  remote_user: systems
+  remote_user: '{{ remote_user }}'
   vars:
     - ssh_key_filename: id_rsa_ansible
   vars_prompt:

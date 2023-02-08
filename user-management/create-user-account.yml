@@ -1,0 +1,27 @@
+---
+- name: Create new user account
+  hosts: '{{ target }}'
+  remote_user: ansible
+  vars_prompt:
+    - name: 'username'
+      prompt: 'Enter the username for the user'
+    - name: 'password'
+      prompt: 'Enter the password for the account'
+  vars_files:
+    - variables/password_salt.yml
+  become: true
+  tasks:
+    - name: Create user user
+      ansible.builtin.user:
+        name: "{{ username }}"
+        password: "{{ password | password_hash('sha512', salt) }}"
+        state: present
+        shell: "/bin/bash"
+        system: false
+        create_home: yes
+
+    - name: Add user to sudo group
+      ansible.builtin.shell: usermod -aG sudo ansible
+      args:
+        executable: /bin/bash
+      when: sudo is defined

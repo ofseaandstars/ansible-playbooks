@@ -87,7 +87,7 @@ This will wipe the existing contents of the file, let you paste the new contents
 ## Create Ansible Account
 **_Requires Password Salt to be configured_**
 
-This playbook creates a new `ansible` user on the specified hosts.
+This playbook creates a new `ansible` user on the specified hosts. You will need to specify the `remote_user` (which is the user that has sudo permissions on the remote host).
 
 > **Note**
 > 
@@ -101,12 +101,12 @@ This playbook creates a new `ansible` user on the specified hosts.
 
 To run with a single host (that you have listed in `/etc/ansible/hosts`):
 ```bash
-ansible-playbook create-ansible-account.yml --extra-vars "target=<host>" --vault-id password_salt@prompt
+ansible-playbook create-ansible-account.yml --extra-vars "target=<host> remote_user=<remote_user>" --vault-id password_salt@prompt
 ```
 
 To run with hosts from a file:
 ```bash
-ansible-playbook create-ansible-account.yml -i <path/to/inventory.yml> --extra-vars "target=<host_group>" --ask-pass --ask-become-pass --vault-id password_salt@prompt
+ansible-playbook create-ansible-account.yml -i <path/to/inventory.yml> --extra-vars "target=<host_group> remote_user=<remote_user>" --ask-pass --ask-become-pass --vault-id password_salt@prompt
 ```
 
 ----
