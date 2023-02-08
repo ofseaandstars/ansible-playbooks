@@ -109,6 +109,22 @@ To run with hosts from a file:
 ansible-playbook create-ansible-account.yml -i <path/to/inventory.yml> --extra-vars "target=<host_group> remote_user=<remote_user>" --ask-pass --ask-become-pass --vault-id password_salt@prompt
 ```
 
+## Create User Account
+
+Simple playbook to create a new user account with (optional) sudo permissions.
+
+### Usage
+
+Create user with sudo permissions:
+```bash
+ansible-playbook create-user-account.yml -i <path/to/inventory.yml> --extra-vars "target=<host_group> sudo=true" --ask-pass --ask-become-pass --vault-id password_salt@prompt
+```
+
+Create user without sudo permissions:
+```bash
+ansible-playbook create-user-account.yml -i <path/to/inventory.yml> --extra-vars "target=<host_group>" --ask-pass --ask-become-pass --vault-id password_salt@prompt
+```
+
 ----
 
 ## Distribute SSH Public Key (WIP)
