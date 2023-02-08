@@ -5,6 +5,7 @@
   vars_prompt:
     - name: 'username'
       prompt: 'Enter the username for the user'
+      private: no
     - name: 'password'
       prompt: 'Enter the password for the account'
   vars_files:
