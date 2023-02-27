@@ -1,5 +1,5 @@
 ---
-- name: Create new user account
+- name: Create new user account with ansible account
   hosts: '{{ target }}'
   remote_user: ansible
   vars_prompt:

@@ -1,5 +1,14 @@
 # User Management
 
+This collection of playbooks is designed for general deployment and management of user accounts. The general order of operations is as follows (after following the configuration steps in the following section):
+
+1. Create an ansible user account using an existing account on the system with sudo privileges (and optionally generate some SSH keys for it)
+2. Distribute SSH Keys (if generated) to new host
+
+After this, you can run the other playbooks using the created ansible service account.
+
+This collection of playbooks is configured with the ansible user being `ansible`, but you may adjust these playbooks to your liking.
+
 # Configuration
 
 ## Setting up an inventory file (Optional)
@@ -87,6 +96,8 @@ This will wipe the existing contents of the file, let you paste the new contents
 ## Create Ansible Account
 **_Requires Password Salt to be configured_**
 
+**_Requires existing account with sudo privileges_**
+
 This playbook creates a new `ansible` user on the specified hosts. You will need to specify the `remote_user` (which is the user that has sudo permissions on the remote host).
 
 > **Note**
@@ -101,7 +112,7 @@ This playbook creates a new `ansible` user on the specified hosts. You will need
 
 To run with a single host (that you have listed in `/etc/ansible/hosts`):
 ```bash
-ansible-playbook create-ansible-account.yml --extra-vars "target=<host> remote_user=<remote_user>" --vault-id password_salt@prompt
+ansible-playbook create-ansible-account.yml --extra-vars "target=<host> remote_user=<remote_user>" --ask-pass --ask-become-pass --vault-id password_salt@prompt
 ```
 
 To run with hosts from a file:
@@ -110,6 +121,8 @@ ansible-playbook create-ansible-account.yml -i <path/to/inventory.yml> --extra-v
 ```
 
 ## Create User Account
+
+**_Requires ansible account with sudo privileges_**
 
 Simple playbook to create a new user account with (optional) sudo permissions.
 
@@ -129,6 +142,8 @@ ansible-playbook create-user-account.yml -i <path/to/inventory.yml> --extra-vars
 
 ## Distribute SSH Public Key (WIP)
 
+**_Requires ansible account with sudo privileges_**
+
 This playbook will distribute the public SSH key created during the account creation process for the control node to other remote hosts for future use.
 
 ### Usage
@@ -142,6 +157,8 @@ ansible-playbook -i <path/to/inventory.yml> distribute-ssh-public-key.yml --extr
 ## Change User Password
 **_Requires Password Salt to be configured_**
 
+**_Requires ansible account with sudo privileges_**
+
 This is a simple playbook that allows you to modify the password of a user on the remote host. You will be prompted for the username and the subsequent password.
 
 ### Usage
@@ -154,6 +171,8 @@ ansible-playbook change-user-password.yml --extra-vars "target=<host>" --vault-i
 
 ## Rotate Passwords
 **_Requires Password Salt to be configured_**
+
+**_Requires ansible account with sudo privileges_**
 
 This playbook allows you to specify a unique password for any host that you have listed in an inventory file or in `/etc/ansible/hosts`.
 

@@ -7,7 +7,7 @@
     - ssh_key_filename: id_rsa_ansible
   vars_prompt:
     - name: 'ssh_passphrase'
-      prompt: 'Enter the passphrase for the SSH key'
+      prompt: 'Enter the passphrase for the SSH key (leave blank if not generating SSH keys for the user)'
     - name: 'password'
       prompt: 'Enter the password for the account'
   vars_files:
